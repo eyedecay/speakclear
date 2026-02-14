@@ -4,6 +4,7 @@ Transcription service: audio file or bytes → text using Whisper.
 from pathlib import Path
 from typing import Optional
 
+# use openai whisper model for transcriptions
 import whisper
 import tempfile
 
@@ -18,15 +19,13 @@ def transcribe_audio(
     language: Optional[str] = None,
 ) -> str:
     """
-    Transcribe an audio file to text.
-
+    Transcribes an audio file to text using the Whisper model.
     Args:
-        audio_path: Path to the audio file (e.g. .wav, .mp3, .webm, .m4a).
-        model_name: Whisper model size: "tiny", "base", "small", "medium", "large".
-        language: Optional ISO language code (e.g. "en"); None for auto-detect.
-
+        audio_path (Path): Path to the audio file (e.g. .wav, .mp3, .webm, .m4a).
+        model_name (str): Whisper model size: "tiny", "base", "small", "medium", "large".
+        language (Optional[str]): Optional ISO language code (e.g. "en"); None for auto-detect.
     Returns:
-        Transcribed text.
+        (str): The transcribed text.
     """
     model = whisper.load_model(model_name)
     kwargs = {"verbose": False}
@@ -39,18 +38,14 @@ def transcribe_audio(
 def transcribe_bytes(
     audio_bytes: bytes,*,suffix: str = ".webm",model_name: str = DEFAULT_MODEL,language: Optional[str] = None,) -> str:
     """
-    Transcribe raw audio bytes to text (e.g. from browser MediaRecorder).
-
-    Writes bytes to a temporary file and runs Whisper, then returns the text.
-
+    Transcribes raw audio bytes to text (e.g. from browser MediaRecorder) by writing to a temporary file and running Whisper.
     Args:
-        audio_bytes: Raw audio data.
-        suffix: File extension so Whisper/ffmpeg can detect format (.webm, .wav, etc.).
-        model_name: Whisper model size.
-        language: Optional language code.
-
+        audio_bytes (bytes): Raw audio data.
+        suffix (str): File extension so Whisper/ffmpeg can detect format (.webm, .wav, etc.).
+        model_name (str): Whisper model size.
+        language (Optional[str]): Optional language code; None for auto-detect.
     Returns:
-        Transcribed text.
+        (str): The transcribed text.
     """
 
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as f:

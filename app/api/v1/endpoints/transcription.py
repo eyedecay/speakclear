@@ -17,7 +17,13 @@ ALLOWED_SUFFIXES = {".wav", ".mp3", ".webm", ".m4a", ".ogg", ".flac", ".mp4", ".
 
 
 def _suffix_for_filename(filename: str) -> str:
-    """Return file suffix, defaulting to .webm for unknown (e.g. blob from recorder)."""
+    """
+    Returns the file suffix for the given filename, or .webm if the suffix is not in the allowed list (e.g. blob from recorder).
+    Args:
+        filename (str): The filename to extract the suffix from.
+    Returns:
+        (str): The lowercase file extension (e.g. .wav, .webm).
+    """
     s = Path(filename).suffix.lower()
     return s if s in ALLOWED_SUFFIXES else ".webm"
 
@@ -28,11 +34,12 @@ async def transcribe(
     language: Optional[str] = None,
 ) -> TranscriptionResponse:
     """
-    Upload an audio file or recorded audio; returns transcription.
-
-    Use for:
-    - Uploading a saved audio file (e.g. .mp3, .wav).
-    - Sending recorded audio from the client (e.g. browser MediaRecorder as .webm).
+    Accepts an uploaded audio file or recorded audio and returns the transcription as text.
+    Args:
+        file (UploadFile): The uploaded audio file (e.g. .wav, .mp3, .webm).
+        language (Optional[str]): Optional ISO language code for the transcription; None for auto-detect.
+    Returns:
+        (TranscriptionResponse): Response model containing the transcribed text.
     """
     suffix = _suffix_for_filename(file.filename or "")
 
