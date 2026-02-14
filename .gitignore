@@ -1,1 +1,12 @@
-venv
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.env.local
+*.egg-info/
+.eggs/
+dist/
+build/
