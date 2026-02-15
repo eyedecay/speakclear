@@ -7,7 +7,8 @@ from typing import Optional
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.schemas.transcription import TranscriptionResponse
-from app.services.transcription import transcribe_audio
+from app.services.analysis import count_filler_words, get_section_analysis
+from app.services.transcription import transcribe_audio_with_segments
 
 router = APIRouter(prefix="/transcription", tags=["transcription"])
 
@@ -54,8 +55,14 @@ async def transcribe(
         tmp.write(contents)
         path = Path(tmp.name)
     try:
-        text = transcribe_audio(path, language=language or None)
-        return TranscriptionResponse(text=text)
+        text, segments = transcribe_audio_with_segments(path, language=language or None)
+        filler_word_count = count_filler_words(text)
+        sections = get_section_analysis(segments, words_per_section=50)
+        return TranscriptionResponse(
+            text=text,
+            filler_word_count=filler_word_count,
+            sections=sections,
+        )
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"Transcription failed: {str(e)}")
     finally:

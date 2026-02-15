@@ -13,7 +13,8 @@ from app.api.v1 import api_router
 
 #import audio transcription scripts
 from app.services.audio import record_microphone_to_file
-from app.services.transcription import transcribe_audio
+from app.services.transcription import transcribe_audio_with_segments
+from app.services.analysis import count_filler_words, get_section_analysis
 
 app = FastAPI(
     title="SpeakClear",
@@ -55,9 +56,19 @@ def run_record_and_transcribe() -> None:
         return
     try:
         print("Transcribing...")
-        text = transcribe_audio(audio_path)
+        text, segments = transcribe_audio_with_segments(audio_path)
+        filler_word_count = count_filler_words(text)
+        sections = get_section_analysis(segments, words_per_section=50)
         print("\n--- Transcription ---")
         print(text or "(no speech detected)")
+        print("---------------------")
+        print("\nFiller word count: ")
+        for i in filler_word_count:
+            print(f"{i}: {filler_word_count[i]}")
+        print("\nSections (every ~50 words): high/low understanding by WPM: ")
+        for s in sections:
+            print(f"  Section {s['section_index']}: words {s['word_start']}-{s['word_end']}, "
+                  f"WPM={s['wpm']}, understanding={s['understanding']}")
         print("---------------------")
     finally:
         audio_path.unlink(missing_ok=True)

@@ -35,6 +35,36 @@ def transcribe_audio(
     return (result.get("text") or "").strip()
 
 
+def transcribe_audio_with_segments(
+    audio_path: Path,
+    *,
+    model_name: str = DEFAULT_MODEL,
+    language: Optional[str] = None,
+) -> tuple[str, list[dict]]:
+    """
+    Transcribes an audio file to text and returns segment timestamps for analysis.
+    Args:
+        audio_path (Path): Path to the audio file.
+        model_name (str): Whisper model size.
+        language (Optional[str]): Optional ISO language code; None for auto-detect.
+    Returns:
+        (tuple[str, list[dict]]): Full text and list of segments with "start", "end", "text".
+    """
+    model = whisper.load_model(model_name)
+    kwargs = {"verbose": False}
+    if language:
+        kwargs["language"] = language
+    result = model.transcribe(str(audio_path), **kwargs)
+    text = (result.get("text") or "").strip()
+    segments = result.get("segments") or []
+    # Normalize to list of {start, end, text}
+    seg_list = [
+        {"start": s["start"], "end": s["end"], "text": (s.get("text") or "").strip()}
+        for s in segments
+    ]
+    return text, seg_list
+
+
 def transcribe_bytes(
     audio_bytes: bytes,*,suffix: str = ".webm",model_name: str = DEFAULT_MODEL,language: Optional[str] = None,) -> str:
     """
