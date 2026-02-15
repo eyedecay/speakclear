@@ -4,6 +4,7 @@ import "./App.css";
 const API_BASE = "http://localhost:8000/api/v1/transcription";
 
 export default function App() {
+  const [view, setView] = useState("home");
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
@@ -80,6 +81,17 @@ export default function App() {
     setError(null);
   }
 
+  if (view === "analytics") {
+    return (
+      <div className="page">
+        <h1 className="title">Analytics</h1>
+        <div className="newRecording">
+          <button type="button" onClick={() => setView("home")}>Back</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <h1 className="title">SpeakClear</h1>
@@ -149,6 +161,7 @@ export default function App() {
           <p className="resultText">{result.text || "(no speech detected)"}</p>
           <div className="newRecording">
             <button type="button" onClick={startOver}>New recording or upload</button>
+            <button type="button" onClick={() => setView("analytics")}>Go to analytics</button>
           </div>
         </div>
       )}
