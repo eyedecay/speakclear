@@ -109,6 +109,26 @@
   color: #666;
 }
 
+.loadingCircleWrap {
+  display: inline-flex;
+  margin-bottom: 12px;
+}
+
+.loadingCircle {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e5e5;
+  border-top-color: #1a1a1a;
+  border-radius: 50%;
+  animation: loadingSpin 0.8s linear infinite;
+}
+
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .result {
   margin-top: 32px;
   padding: 24px;
@@ -143,6 +163,7 @@
   color: #991b1b;
 }
 
+/* Action buttons (new recording, home, etc.) */
 .newRecording {
   margin-top: 16px;
 }
