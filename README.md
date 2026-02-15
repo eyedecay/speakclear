@@ -49,10 +49,10 @@ pip install -r requirements.txt
 
 # Run server
 python main.py
-
+```
 ### Frontend
 ```bash
-# Navigate to the frontend (client) directory
+# Open a new terminal and navigate to frontend directory
 cd ../client   
 
 # Install dependencies
