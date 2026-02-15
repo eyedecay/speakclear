@@ -1,0 +1,157 @@
+.page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 40px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  padding: 20px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.option:hover {
+  border-color: #999;
+  background: #fafafa;
+}
+
+.option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.optionLabel {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.optionHint {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #666;
+}
+
+.recording {
+  margin-top: 24px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.recordingStatus {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.stopBtn {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.stopBtn:hover {
+  background: #333;
+}
+
+.uploadInput {
+  display: none;
+}
+
+.processing {
+  margin-top: 32px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-align: center;
+  color: #666;
+}
+
+.result {
+  margin-top: 32px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.resultTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #1a1a1a;
+}
+
+.resultText {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.error {
+  margin-top: 24px;
+  padding: 16px;
+  background: #fdf2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #991b1b;
+}
+
+.newRecording {
+  margin-top: 16px;
+}
+
+.newRecording button {
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.newRecording button:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
