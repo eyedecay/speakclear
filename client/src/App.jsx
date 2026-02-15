@@ -105,24 +105,75 @@ export default function App() {
   }, [view, analyticsLoading]);
 
   // Analytics view
-  if (view === "analytics") {
-    return (
-      <div className="page">
-        <h1 className="title">Analytics</h1>
-        {analyticsLoading ? (
-          <div className="processing">
-            <LoadingCircle />
-            <p>Loading analytics…</p>
-          </div>
-        ) : (
-          <div className="newRecording">
-            <button type="button" onClick={() => setView("home")}>Home</button>
-          </div>
-        )}
-      </div>
-    );
-  }
+if (view === "analytics") {
 
+  const fillerRanking =
+    Object.entries(result?.fillers || {})
+      .sort((a,b)=>b[1]-a[1]);
+
+  const overallWPM =
+    result?.sections?.length
+      ? Math.round(
+          result.sections.reduce((s,x)=>s+(x.wpm||0),0)
+          / result.sections.length
+        )
+      : null;
+
+  return (
+    <div className="page">
+
+      <h1 className="title">Analytics</h1>
+
+      {analyticsLoading ? (
+
+        <div className="processing">
+          <LoadingCircle />
+          <p>Loading analytics…</p>
+        </div>
+
+      ) : (
+
+        <div className="dashboard">
+
+          {/* LEFT */}
+          <div className="panel">
+            <h2>Transcription</h2>
+            <p>{result?.text || "(no speech detected)"}</p>
+          </div>
+
+          {/* MIDDLE */}
+          <div className="panel">
+            <h2>Top filler words</h2>
+
+            {fillerRanking.length ? (
+              <ol>
+                {fillerRanking.map(([w,c])=>(
+                  <li key={w}>{w} — {c}</li>
+                ))}
+              </ol>
+            ) : <p>No filler words 🎉</p>}
+          </div>
+
+          {/* RIGHT */}
+          <div className="panel">
+            <h2>Speaking Speed</h2>
+            <div className="wpmNumber">
+              {overallWPM ?? "--"}
+            </div>
+            <p>words per minute</p>
+            <p className="wpmHint">Ideal: 120–160</p>
+          </div>
+
+        </div>
+      )}
+
+      <div className="newRecording">
+        <button onClick={()=>setView("home")}>Home</button>
+      </div>
+
+    </div>
+  );
+}
   // Home view
   return (
     <div className="page">
