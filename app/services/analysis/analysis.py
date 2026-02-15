@@ -62,79 +62,75 @@ def get_section_analysis(
         wpm_high_min (float): Minimum WPM to count as high understanding.
         wpm_high_max (float): Maximum WPM to count as high understanding.
     Returns:
-        (list[dict]): Each item has section_index, word_start, word_end, word_count, duration_sec, wpm, understanding ("high"|"low").
+        (list[dict]): Each item has section_index, word_start, word_end, word_count, duration_sec, wpm, understanding ("high"|"low"), and text.
     """
     if not segments:
         return []
 
-    sections: list[dict[str, Any]] = []
-    acc_words: list[str] = []
-    acc_start: float | None = None
-    acc_end: float | None = None
-    section_index = 0
-
+    # Flatten all words with their timestamps
+    all_words = []
     for seg in segments:
         start = float(seg.get("start", 0))
         end = float(seg.get("end", 0))
         text = (seg.get("text") or "").strip()
         words = text.split()
+        
         if not words:
             continue
-        if acc_start is None:
-            acc_start = start
-        acc_end = end
-        acc_words.extend(words)
-
-        while len(acc_words) >= words_per_section:
-            take = acc_words[:words_per_section]
-            acc_words = acc_words[words_per_section:]
-            total_duration = (acc_end or end) - (acc_start or start)
-            if total_duration <= 0:
-                total_duration = 0.1
-            total_words_in_span = len(take) + len(acc_words)
-            if total_words_in_span > 0:
-                duration_sec = (len(take) / total_words_in_span) * total_duration
-            else:
-                duration_sec = total_duration
-            if duration_sec <= 0:
-                duration_sec = 0.1
-            wpm = len(take) / (duration_sec / 60.0)
-            understanding = "high" if wpm_high_min <= wpm <= wpm_high_max else "low"
-            word_start = section_index * words_per_section
-            word_end = word_start + len(take)
-            sections.append({
-                "section_index": section_index,
-                "word_start": word_start,
-                "word_end": word_end,
-                "word_count": len(take),
-                "duration_sec": round(duration_sec, 2),
-                "wpm": round(wpm, 1),
-                "understanding": understanding,
+            
+        # Estimate timestamp for each word
+        duration = end - start
+        time_per_word = duration / len(words) if len(words) > 0 else 0
+        
+        for i, word in enumerate(words):
+            word_start = start + (i * time_per_word)
+            word_end = start + ((i + 1) * time_per_word)
+            all_words.append({
+                "word": word,
+                "start": word_start,
+                "end": word_end
             })
-            section_index += 1
-            # Time for remainder so next section gets correct duration
-            if acc_words and total_words_in_span > 0:
-                remainder_frac = len(acc_words) / total_words_in_span
-                acc_start = (acc_end or end) - remainder_frac * total_duration
-            else:
-                acc_start = acc_end
-
-    # Remainder
-    if acc_words and acc_start is not None and acc_end is not None:
-        duration_sec = acc_end - acc_start
+    
+    if not all_words:
+        return []
+    
+    # Create sections
+    sections = []
+    section_index = 0
+    i = 0
+    
+    while i < len(all_words):
+        # Take up to words_per_section words
+        section_words = all_words[i:i + words_per_section]
+        
+        if not section_words:
+            break
+            
+        section_start = section_words[0]["start"]
+        section_end = section_words[-1]["end"]
+        duration_sec = section_end - section_start
+        
         if duration_sec <= 0:
             duration_sec = 0.1
-        wpm = len(acc_words) / (duration_sec / 60.0)
+        
+        word_count = len(section_words)
+        wpm = word_count / (duration_sec / 60.0)
         understanding = "high" if wpm_high_min <= wpm <= wpm_high_max else "low"
-        word_start = section_index * words_per_section
+        
+        section_text = " ".join([w["word"] for w in section_words])
+        
         sections.append({
             "section_index": section_index,
-            "word_start": word_start,
-            "word_end": word_start + len(acc_words),
-            "word_count": len(acc_words),
+            "word_start": i,
+            "word_end": i + word_count,
+            "word_count": word_count,
             "duration_sec": round(duration_sec, 2),
             "wpm": round(wpm, 1),
             "understanding": understanding,
+            "text": section_text,
         })
-
+        
+        section_index += 1
+        i += words_per_section
+    
     return sections
