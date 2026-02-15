@@ -12,6 +12,12 @@
   color: #1a1a1a;
 }
 
+.tagline {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 8px;
+}
+
 .subtitle {
   font-size: 0.95rem;
   color: #666;

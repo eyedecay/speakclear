@@ -83,6 +83,7 @@ export default function App() {
   return (
     <div className="page">
       <h1 className="title">SpeakClear</h1>
+      <p className="tagline">tool to improve speaking</p>
       <p className="subtitle">Record or upload audio to get a transcription.</p>
 
       {!result && !processing && (
