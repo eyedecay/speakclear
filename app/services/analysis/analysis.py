@@ -33,18 +33,23 @@ def count_filler_words(text: str) -> dict[str, Any]:
     Args:
         text (str): The full transcription text.
     Returns:
-        (dict): Keys are filler words/phrases and "total"; values are counts.
+        (dict): Keys are filler words/phrases; values are counts. Only includes non-zero counts.
     """
     text_lower = text.lower()
     counts: dict[str, Any] = {}
-    total = 0
+    
+    print(f"DEBUG - Analyzing text: '{text_lower}'")  # Debug
+    
     for phrase in FILLER_PATTERNS:
         # Word-boundary style: avoid matching inside words
         pattern = r"\b" + re.escape(phrase) + r"\b"
-        n = len(re.findall(pattern, text_lower))
-        counts[phrase] = n
-        total += n
-    counts["total"] = total
+        matches = re.findall(pattern, text_lower)
+        n = len(matches)
+        print(f"DEBUG - Pattern '{phrase}': found {n} matches: {matches}")  # Debug
+        if n > 0:
+            counts[phrase] = n
+    
+    print(f"DEBUG - Final counts: {counts}")  # Debug
     return counts
 
 

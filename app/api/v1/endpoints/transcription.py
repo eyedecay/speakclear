@@ -60,7 +60,7 @@ async def transcribe(
         sections = get_section_analysis(segments, words_per_section=50)
         return TranscriptionResponse(
             text=text,
-            filler_word_count=filler_word_count,
+            fillers=filler_word_count,
             sections=sections,
         )
     except Exception as e:
