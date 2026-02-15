@@ -1,17 +1,28 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 
 const API_BASE = "http://localhost:8000/api/v1/transcription";
+
+// Loading spinner
+function LoadingCircle() {
+  return (
+    <div className="loadingCircleWrap" aria-hidden="true">
+      <div className="loadingCircle" />
+    </div>
+  );
+}
 
 export default function App() {
   const [view, setView] = useState("home");
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const mediaRecorderRef = useRef(null);
   const uploadInputRef = useRef(null);
 
+  // POST audio to backend, set result or error
   async function sendAudio(blob, filename = "recording.webm") {
     setError(null);
     setResult(null);
@@ -36,6 +47,7 @@ export default function App() {
     }
   }
 
+  // Request mic, start MediaRecorder, on stop send blob
   async function startRecording() {
     setError(null);
     setResult(null);
@@ -59,6 +71,7 @@ export default function App() {
     }
   }
 
+  // Stop recorder and release mic
   function stopRecording() {
     if (mediaRecorderRef.current && recording) {
       mediaRecorderRef.current.stop();
@@ -67,6 +80,7 @@ export default function App() {
     }
   }
 
+  // User picked a file, send it
   function handleUpload(e) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,28 +90,47 @@ export default function App() {
     e.target.value = "";
   }
 
+  // Clear result and error
   function startOver() {
     setResult(null);
     setError(null);
   }
 
+  // Analytics loading: show spinner then content after delay
+  useEffect(() => {
+    if (view === "analytics" && analyticsLoading) {
+      const t = setTimeout(() => setAnalyticsLoading(false), 600);
+      return () => clearTimeout(t);
+    }
+  }, [view, analyticsLoading]);
+
+  // Analytics view
   if (view === "analytics") {
     return (
       <div className="page">
         <h1 className="title">Analytics</h1>
-        <div className="newRecording">
-          <button type="button" onClick={() => setView("home")}>Back</button>
-        </div>
+        {analyticsLoading ? (
+          <div className="processing">
+            <LoadingCircle />
+            <p>Loading analytics…</p>
+          </div>
+        ) : (
+          <div className="newRecording">
+            <button type="button" onClick={() => setView("home")}>Home</button>
+          </div>
+        )}
       </div>
     );
   }
 
+  // Home view
   return (
     <div className="page">
       <h1 className="title">SpeakClear</h1>
       <p className="tagline">tool to improve speaking</p>
       <p className="subtitle">Record or upload audio to get a transcription.</p>
 
+      {/* Record or upload options */}
       {!result && !processing && (
         <div className="options">
           <button
@@ -131,6 +164,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Recording in progress */}
       {recording && (
         <div className="recording">
           <p className="recordingStatus">Recording… “Stop recording” when finished.</p>
@@ -140,12 +174,15 @@ export default function App() {
         </div>
       )}
 
+      {/* Transcription loading */}
       {processing && (
         <div className="processing">
+          <LoadingCircle />
           <p>Processing…</p>
         </div>
       )}
 
+      {/* Error message */}
       {error && (
         <div className="error">
           <p>{error}</p>
@@ -155,13 +192,14 @@ export default function App() {
         </div>
       )}
 
+      {/* Transcription result */}
       {result && (
         <div className="result">
           <h2 className="resultTitle">Transcription</h2>
           <p className="resultText">{result.text || "(no speech detected)"}</p>
           <div className="newRecording">
             <button type="button" onClick={startOver}>New recording or upload</button>
-            <button type="button" onClick={() => setView("analytics")}>Go to analytics</button>
+            <button type="button" onClick={() => { setView("analytics"); setAnalyticsLoading(true); }}>Go to analytics</button>
           </div>
         </div>
       )}
