@@ -10,3 +10,4 @@ __pycache__/
 .eggs/
 dist/
 build/
+node_modules/
