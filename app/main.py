@@ -16,6 +16,7 @@ from app.api.v1 import api_router
 from app.services.audio import record_microphone_to_file
 from app.services.transcription import transcribe_audio_with_segments
 from app.services.analysis import count_filler_words, get_section_analysis
+from app.services.wpmgraph import plot_wpm_sections
 
 app = FastAPI(
     title="SpeakClear",
@@ -79,6 +80,7 @@ def run_record_and_transcribe() -> None:
             print(f"  Section {s['section_index']}: words {s['word_start']}-{s['word_end']}, "
                   f"WPM={s['wpm']}, understanding={s['understanding']}")
         print("---------------------")
+        plot_wpm_sections(sections)
     finally:
         audio_path.unlink(missing_ok=True)
 
