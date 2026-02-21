@@ -119,6 +119,15 @@ if (view === "analytics") {
         )
       : null;
 
+  const sections = result?.sections || [];
+  const chartH = 160;
+  const chartPadL = 40;
+  const barGap = 12;
+  const maxWPM = sections.length ? Math.max(...sections.map(s => s.wpm), 180) : 180;
+  const barWidth = sections.length ? Math.max(24, (600 - chartPadL - sections.length * barGap) / sections.length) : 40;
+  const svgWidth = chartPadL + sections.length * (barWidth + barGap) + barGap;
+  function yPos(wpm) { return chartH - (wpm / maxWPM) * chartH; }
+
   return (
     <div className="page">
 
@@ -133,6 +142,7 @@ if (view === "analytics") {
 
       ) : (
 
+        <>
         <div className="dashboard">
 
           {/* LEFT */}
@@ -165,6 +175,40 @@ if (view === "analytics") {
           </div>
 
         </div>
+
+        {sections.length > 0 && (
+          <div className="chartPanel">
+            <h2>WPM per section</h2>
+            <div className="chartWrap">
+              <svg className="chartSvg" viewBox={`0 0 ${svgWidth} ${chartH + 40}`} preserveAspectRatio="none">
+                {[120, 160].map(ref => (
+                  <g key={ref}>
+                    <line x1={chartPadL} x2={svgWidth} y1={yPos(ref)} y2={yPos(ref)} stroke={ref === 120 ? "#d1d5db" : "#93c5fd"} strokeWidth="1" strokeDasharray="4 3" />
+                    <text x={chartPadL - 4} y={yPos(ref) + 4} fontSize="9" fill="#999" textAnchor="end">{ref}</text>
+                  </g>
+                ))}
+                {sections.map((s, i) => {
+                  const x = chartPadL + barGap + i * (barWidth + barGap);
+                  const barH = (s.wpm / maxWPM) * chartH;
+                  return (
+                    <g key={i}>
+                      <rect x={x} y={yPos(s.wpm)} width={barWidth} height={barH} rx="3" fill={s.understanding === "high" ? "#bbf7d0" : "#fecaca"} />
+                      <text x={x + barWidth / 2} y={yPos(s.wpm) - 5} fontSize="9" fill="#555" textAnchor="middle" fontWeight="600">{s.wpm}</text>
+                      <text x={x + barWidth / 2} y={chartH + 14} fontSize="9" fill="#999" textAnchor="middle">S{s.section_index}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+            <div className="chartLegend">
+              <span><span className="legendDot" style={{ background: "#bbf7d0" }} />High understanding</span>
+              <span><span className="legendDot" style={{ background: "#fecaca" }} />Low understanding</span>
+              <span><span className="legendDot" style={{ background: "#93c5fd" }} />Fast (160)</span>
+              <span><span className="legendDot" style={{ background: "#d1d5db" }} />Slow (120)</span>
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       <div className="newRecording">
