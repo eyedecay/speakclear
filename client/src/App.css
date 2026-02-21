@@ -208,3 +208,47 @@
   font-size:48px;
   font-weight:700;
 }
+
+/* WPM graph */
+.chartPanel {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 32px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin-top: 20px;
+}
+
+.chartPanel h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 24px;
+}
+
+.chartWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.chartSvg {
+  width: 100%;
+  min-width: 400px;
+  height: 220px;
+  display: block;
+}
+
+.chartLegend {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.legendDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
